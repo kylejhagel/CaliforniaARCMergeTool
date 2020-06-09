@@ -1,0 +1,90 @@
+.nav-pills .nav-link.active, .nav-pills .show > .nav-link {
+    color: #fff;
+    background-color: #15467C;
+}
+
+.btn-primary {
+    color: #fff;
+    background-color: #15467C;
+    border-color: #002650;
+}
+    .btn-primary:hover {
+        color: #fff;
+        background-color: #0655AA;
+        border-color: #002650;
+    }
+    .btn-primary.disabled, .btn-primary:disabled {
+        color: #fff;
+        background-color: #43566C!important;
+        border-color: #002650!important;
+    }
+
+.bg-success {
+    color: #fff;
+    background: #156615;
+}
+.badge-success {
+    color: #fff;
+    background: #156615;
+}
+.label-success {
+    color: #fff;
+    background: #156615;
+}
+a {
+    color: #15467C;
+    text-decoration: none;
+    background-color: transparent;
+}
+
+caption {
+    color: #495057;
+}
+.spinner-container {
+    position: relative;
+    width: auto;
+    height: 100%;
+    background-color: rgba(128, 128, 128, .2)
+}
+
+.spinner, .inner-spinner {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    border: 3px solid #2f3640;
+    border-bottom: none;
+    border-top: none;
+    position: absolute;
+    top: 10%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.spinner {
+    animation: spin 1s linear infinite;
+}
+
+.inner-spinner {
+    transform: scale(2);
+    animation: spin-inner 0.3s linear infinite;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg)
+    }
+
+    100% {
+        transform: rotate(360deg) scale(1)
+    }
+}
+
+@keyframes spin-inner {
+    0% {
+        transform: rotate(360deg) scale(0.5)
+    }
+
+    100% {
+        transform: rotate(0deg) scale(0.5)
+    }
+}

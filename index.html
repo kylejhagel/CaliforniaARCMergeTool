@@ -1,0 +1,509 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+    <title>Merging Tool Demo</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    
+    <link rel="stylesheet" href="style.css" />
+    
+</head>
+<body>
+    <div class="container">
+        <h1>Merge Tool</h1>
+        <div id="systemIsLooking" class="modal fade show" tabindex="-1" role="dialog" aria-labelledby="systemIsLooking" aria-modal="true" style="display: none;">
+            <div class="spinner-container">
+                <div class="spinner"></div>
+                <div class="inner-spinner"></div>
+            </div>
+        </div>
+
+        <div id="systemIsMerging" class="modal fade show" tabindex="-1" role="dialog" aria-labelledby="systemIsMerging" aria-modal="true" style="display: none;">
+            <div class="spinner-container">
+                <div class="spinner"></div>
+                <div class="inner-spinner"></div>
+            </div>
+        </div>
+
+        <header>
+            <ul class="nav nav-pills">
+                <li class="nav-item">
+                    <span id="step1" class="nav-link active">Step 1: Search records</span>
+                </li>
+                <li class="nav-item">
+                    <span id="step2" class="nav-link">Step 2: Select primary account</span>
+                </li>
+                <li class="nav-item">
+                    <span id="step3" class="nav-link">Step 3: Select records</span>
+                </li>
+                <li class="nav-item">
+                    <span id="step4" class="nav-link">Step 4: Confirm Records</span>
+                </li>
+                <li class="nav-item">
+                    <span id="step5" class="nav-link">Complete</span>
+                </li>
+            </ul>
+        </header>
+
+        <div id="mergeUserNoResults" class="row" style="display:none;">
+            <div class="col">
+                <div class="alert alert-info">
+                    <p class="text-center"><strong>0</strong> results found. Please try your search again.</p>
+                </div>
+            </div>
+        </div>
+
+        <!--Step 1: Look up someone-->
+        <div id="searchUserLookupDiv" class="row">
+            <div class="col">
+                <div class="card bg-light mb-3 p-4 shadow rounded">
+                    <h2>Step 1: Search for records</h2>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer fermentum sodales rutrum. Donec sit amet ligula in enim posuere sodales. Donec scelerisque condimentum molestie. </p>
+                    <form>
+                        <div class="form-group row">
+                            <label for="FirstName" class="col-sm-3 col-md-2 col-form-label">First Name</label>
+                            <div class="col-sm-12 col-md-8 col-lg-6">
+                                <input type="text" class="form-control" id="FirstName">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="LastName" class="col-sm-3 col-md-2 col-form-label">Last Name</label>
+                            <div class="col-sm-12 col-md-8 col-lg-6">
+                                <input type="text" class="form-control" id="LastName">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="Email" class="col-sm-3 col-md-2 col-form-label">Email</label>
+                            <div class="col-sm-12 col-md-8 col-lg-6">
+                                <input type="text" class="form-control" id="Email">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="EONumber" class="col-sm-3 col-md-2 col-form-label">EO Number</label>
+                            <div class="col-sm-12 col-md-8 col-lg-6">
+                                <input type="text" class="form-control" id="EONumber">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="offset-md-2 col-md-6">
+                                <!--add a tabindex="-1" attribute on these links (to prevent them from receiving keyboard focus) and use custom JavaScript to disable their functionality.-->
+                                <a href="#" class="btn btn-default btn-lg reload" role="button" aria-disabled="false">Cancel</a>
+                                <a id="searchUsersBtn" href="#" class="btn btn-primary btn-lg"  role="button" aria-disabled="false">Start Search</a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!--Step 2: Results/Select Primary Account-->
+        <div id="mergeUserResultsDiv" class="row" style="display:none;">
+            <div class="col">
+                <div id="mergeUserResultsAlert" class="row" style="display:none;">
+                    <div class="col">
+                        <div class="alert alert-info">
+                            <p class="text-center"><strong>[2]</strong> results found, with two eligible primary records. <strong>Please select one record as the primary.</strong> Do we count the number of eligible primary accounts for the user with the [FirstName] or [LastName] or other field options?</p>
+                            
+                        </div>
+                    </div>
+                </div>
+                <div class="card bg-light mb-3 p-4 shadow rounded">
+                    <h2>Step 2: Select a primary account</h2>
+                    <form>
+                        <table id="userResultsTable" class="table table-sm table-condensed table-bordered table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Select</th>
+                                    <th>First Name</th>
+                                    <th>Last Name</th>
+                                    <th>EO #</th>
+                                    <th>Email</th>
+                                    <th>DOB</th>
+                                    <th>Permission</th>
+                                    <th>User Record* (define this)</th>
+
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <label for="selectPrimary[FirstName0][LastName0]" class="sr-only">[FirstName0][LastName0]</label>
+                                        <input id="selectPrimary[FirstName0][LastName0]" class="allowPrimaryCheck" type="checkbox" />
+                                    </td>
+                                    <td>Marco</td>
+                                    <td>Botton</td>
+                                    <td>EO123456</td>
+                                    <td>mbsmogtech@gmail.com</td>
+                                    <td>1/1/1990</td>
+                                    <td>BAR Admin</td>
+                                    <td class="text-center"><span class="badge badge-success">Yes</span></td>
+
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <label for="selectPrimary[FirstName1][LastName1]" class="sr-only">[FirstName0][LastName0]</label>
+                                        <input id="selectPrimary[FirstName1][LastName1]" class="allowPrimaryCheck" type="checkbox" />
+                                    </td>
+                                    <td>Marco Jr.</td>
+                                    <td>Botton</td>
+                                    <td>EO456789</td>
+                                    <td>mbsmog@gmail.com</td>
+                                    <td>10/10/1999</td>
+                                    <td>Instructor</td>
+                                    <td class="text-center"><span class="badge badge-success">Yes</span></td>
+                                </tr>
+                                <!--TO DO: We'll need to figure out what rules prevent an account from being selected as a primary account-->
+                                <tr class="bg-warning" title="Ineligible to select becauase this is not a registered account">
+                                    <td>
+                                        <label for="selectPrimary[FirstName2][LastName2]" class="sr-only">[FirstName0][LastName0]</label>
+                                        <input id="selectPrimary[FirstName2][LastName2]" class="allowPrimaryCheck" type="checkbox" disabled />
+                                    </td>
+                                    <td>Marco</td>
+                                    <td>Botton</td>
+                                    <td>EO987654</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>Student</td>
+                                    <td class="text-center"> No (how is this defined?)</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="form-group row">
+                            <div class="col-md-6">
+                                <!--add a tabindex="-1" attribute on these links (to prevent them from receiving keyboard focus) and use custom JavaScript to disable their functionality.-->
+                                <button class="btn btn-default btn-lg reload" tabindex="-1" aria-disabled="true">Cancel</button>
+                                <button id="selectPrimaryAccountBtn" class="btn btn-primary btn-lg disabled" tabindex="-1" aria-disabled="true">Continue</button>
+                            </div>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+
+        <!--Step 3: Select eligible accounts to merge-->
+        <div id="mergeRecordsSelectDiv" class="row" style="display:none;">
+            <div class="col">
+                <div class="card bg-light mb-3 p-4 shadow rounded">
+                    <h2>Step 3: Select eligible accounts to merge </h2>
+                    <div class="alert alert-info">
+                        <p><strong>You have selected the primary account to be set to[FirstName] [LastName] [Email].</strong> Next, select the eleigible accounts below you wish to merge into this account.</p>
+                    </div>
+                    <h3>Primary Account</h3>
+                    <table id="userResultsMergeTable" class="table table-sm table-condensed table-hover bg-light">
+                        <thead>
+                            <tr>
+                                <th>First Name</th>
+                                <th>Last Name</th>
+                                <th>EO #</th>
+                                <th>Email</th>
+                                <th>DOB</th>
+                                <th>Permission</th>
+                                <th>User Record* (define this)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Marco</td>
+                                <td>Botton</td>
+                                <td>EO456789</td>
+                                <td>mbsmogtech@gmail.com</td>
+                                <td>10/10/1999</td>
+                                <td>Bar Admin</td>
+                                <td class="text-center"><span class="badge badge-success">Yes</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <h3>Eligible Accounts</h3>
+                    <table id="mergePrimaryAccountTable" class="table table-sm table-condensed table-hover bg-light">
+                        <thead>
+                            <tr>
+                                <th>Select</th>
+                                <th>First Name</th>
+                                <th>Last Name</th>
+                                <th>EO #</th>
+                                <th>Email</th>
+                                <th>DOB</th>
+                                <th>Permission</th>
+                                <th>User Record* (define this)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <label for="selectMerge[FirstName0][LastName0]" class="sr-only">[FirstName0][LastName0]</label>
+                                    <input id="selectMerge[FirstName0][LastName0]" class="allowMergingCheck" type="checkbox" />
+                                </td>
+                                <td>Marco Jr.</td>
+                                <td>Botton</td>
+                                <td>EO456789</td>
+                                <td>mbsmog@gmail.com</td>
+                                <td>10/10/1999</td>
+                                <td>Instructor</td>
+                                <td class="text-center"><span class="badge badge-success">Yes</span></td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label for="selectMerge[FirstName1][LastName1]" class="sr-only">[FirstName0][LastName0]</label>
+                                    <input id="selectMerge[FirstName1][LastName1]" class="allowMergingCheck" type="checkbox" />
+                                </td>
+                                <td>Marco</td>
+                                <td>Botton</td>
+                                <td>EO987654</td>
+                                <td></td>
+                                <td></td>
+                                <td>Student</td>
+                                <td class="text-center"> No (how is this defined?)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="form-group row">
+                        <div class="col-md-6">
+                            <!--add a tabindex="-1" attribute on these links (to prevent them from receiving keyboard focus) and use custom JavaScript to disable their functionality.-->
+                            <button class="btn btn-default btn-lg reload" tabindex="-1" role="button" aria-disabled="false">Cancel</button>
+                            <button id="confirmMergeSelectAccountsBtn" class="btn btn-primary btn-lg disabled" tabindex="-1" aria-disabled="true">Continue</button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!--Step 4: Preview and confirmation before we commit-->
+        <div id="mergeConfirmRecordsSelectDiv" class="row" style="display:none;">
+            <div class="col">
+                <div class="card bg-light mb-3 p-4 shadow rounded">
+                    <h2>Step 4: Confirm records to merge </h2>
+                    <div class="alert alert-info">
+                        <p class="text-center">This is a preview of the final account you are creating.</p>
+                    </div>
+                    <h3>Account Preview</h3>
+                    
+                    <table id="confirmMergeRecordsTable" class="table table-sm table-condensed table-hover bg-light">
+                        <caption>Below is a preview of the the accounts combined.</caption>
+                        <thead>
+                            <tr>
+                                <th>First Name</th>
+                                <th>Last Name</th>
+                                <th>EO #</th>
+                                <th>Email</th>
+                                <th>DOB</th>
+                                <th>Permission</th>
+                                <th>Class History</th>
+                                <th>User Record</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Marco</td>
+                                <td>Botton</td>
+                                <td>EO456789</td>
+                                <td>mbsmogtech@gmail.com</td>
+                                <td>10/10/1999</td>
+                                <td>BAR Admin, Instructor, Student</td>
+                                <td>[ClassName 1][ClassName 2][ClassName 3]</td>
+                                <td class="text-center"><span class="badge badge-success">Yes</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <h3>Secondary Accounts</h3>
+                    <table id="confirmMergeSecondaryAccountTable" class="table table-sm table-condensed table-hover bg-light">
+                        <caption>The following accounts will be merged</caption>
+                        <thead>
+                            <tr>
+                                <th>First Name</th>
+                                <th>Last Name</th>
+                                <th>EO #</th>
+                                <th>Email</th>
+                                <th>DOB</th>
+                                <th>Permission</th>
+                                <th>Class History</th>
+                                <th>User Record* (define this)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Marco Jr.</td>
+                                <td>Botton</td>
+                                <td>EO456789</td>
+                                <td>mbsmog@gmail.com</td>
+                                <td>10/10/1999</td>
+                                <td>Instructor</td>
+                                <td>[ClassName 2]</td>
+                                <td class="text-center">No</td>
+                            </tr>
+                            <tr>
+                                <td>Marco</td>
+                                <td>Botton</td>
+                                <td>EO987654</td>
+                                <td></td>
+                                <td></td>
+                                <td>Student</td>
+                                <td>[ClassName 3]</td>
+                                <td class="text-center"> No </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="alert alert-warning">
+                        <p>
+                            <strong>Understand that the secondary accounts you selected will be permanentely merged into the primary account and they will no longer exist as independent accounts.</strong>  There is no reversing this process so you must be absolutely sure you want to do this.
+                        </p>
+                        <div class="form-group">
+                            <input type="checkbox" name="authorizeMergeAccountsCheckbox" id="authorizeMergeAccountsCheckbox">
+                            <label for="authorizeMergeAccountsCheckbox">I am aware of what I am about to do and I am ok with this.</label>
+                        </div>
+                    </div>
+
+                    <form>
+                        <div class="form-group row">
+                            <div class="col-md-6">
+                                <!--add a tabindex="-1" attribute on these links (to prevent them from receiving keyboard focus) and use custom JavaScript to disable their functionality.-->
+                                <button class="btn btn-default btn-lg reload">Cancel</button>
+                                <button id="confirmMergeRecordsBtn" class="btn btn-primary btn-lg disabled">Continue and Merge Records</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!--Step 5: Complete Merge-->
+        <div id="mergeRecordsCompleteDiv" class="row" style="display:none;">
+            <div class="col">
+                <div class="card bg-light mb-3 p-4 shadow rounded">
+                    <div class="alert alert-success">
+                        <p class="text-center">Success!</p>
+                    </div>
+                    <h3>New Account Information</h3>
+                    <p>Some text here about what this means or what they can do going forward??</p>
+                    <table id="confirmMergePrimaryAccountTable" class="table table-sm table-condensed table-hover bg-light">
+                        <thead>
+                            <tr>
+                                <th>First Name</th>
+                                <th>Last Name</th>
+                                <th>EO #</th>
+                                <th>Email</th>
+                                <th>DOB</th>
+                                <th>Permission</th>
+                                <th>Class History</th>
+                                <th>User Record</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Marco</td>
+                                <td>Botton</td>
+                                <td>EO456789</td>
+                                <td>mbsmogtech@gmail.com</td>
+                                <td>10/10/1999</td>
+                                <td>BAR Admin, Instructor, Student</td>
+                                <td>[ClassName 1][ClassName 2][ClassName 3]</td>
+                                <td class="text-center"><span class="badge badge-success">Yes</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <form>
+                        <div class="form-group row">
+                            <div class="col-md-6">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                <button class="btn btn-primary btn-lg reload" role="button">Start Over</button>
+
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!--Modal to confirm selected primary account-->
+
+    <div class="modal fade" id="confirmPrimaryAccountModal" tabindex="-1" role="dialog" aria-labelledby="confirmPrimaryAccountModal" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Merge Records Confirmation</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <p class="lead">You have selected the following information to be set as the Primary Account. If this looks correct, you may accept and continue the merge process.</p>
+                    <hr class="short" />
+                    <div class="alert alert-info">
+                        <h3>Primary Account</h3>
+                        <ul class="list list-icons">
+                            <li><em class="fa fa-check"></em> [FirstName LastName]</li>
+                            <li><em class="fa fa-check"></em> [E0# 123456]</li>
+                            <li><em class="fa fa-check"></em> [Email]</li>
+                            <li><em class="fa fa-check"></em> [Permission(s):]</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button id="confirmPrimaryAccountBtn" type="button" class="btn btn-primary">Accept and Continue</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--Modal to confirm selected accounts to merge-->
+
+    <div class="modal fade" id="confirmMergeSelectAccountsModal" tabindex="-1" role="dialog" aria-labelledby="confirmMergeSelectAccountsModal" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Confirm merging the following accounts</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-info">
+                        <h3>Primary Account</h3>
+                        <ul class="list list-icons">
+                            <li><em class="fa fa-check"></em> [FirstName LastName]</li>
+                            <li><em class="fa fa-check"></em> EO# [123456]</li>
+                            <li><em class="fa fa-check"></em> [mbsmogtech@gmail.com]</li>
+                            <li><em class="fa fa-check"></em> Permission(s): [Instructor]</li>
+                        </ul>
+                    </div>
+
+                    <p class="text-center">The following accounts will be merged into the primary account above. </p>
+
+                    <div class="row">
+                        <!--for each record we display like this-->
+                        <div class="col">
+                            <ul class="list list-icons">
+                                <li><em class="fa fa-check"></em> [FirstName LastName]</li>
+                                <li><em class="fa fa-check"></em> EO# [123456]</li>
+                                <li><em class="fa fa-check"></em> [mbsmogtech@gmail.com]</li>
+                                <li><em class="fa fa-check"></em> Permission(s): [Instructor]</li>
+                            </ul>
+                        </div>
+                        <div class="col">
+                            <ul class="list list-icons">
+                                <li><em class="fa fa-check"></em> [FirstName LastName]</li>
+                                <li><em class="fa fa-check"></em> EO# [123456]</li>
+                                <li><em class="fa fa-check"></em> [mbsmogtech@gmail.com]</li>
+                                <li><em class="fa fa-check"></em> Permission(s): [Instructor]</li>
+                            </ul>
+                        </div>
+                        <!--/end foreach-->
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default reload" data-dismiss="modal">Close</button>
+                    <button id="selectMergingAccountsBtn" type="button" class="btn btn-primary">Accept and Continue</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+    <script src="script.js"></script>
+</body>
+</html>
